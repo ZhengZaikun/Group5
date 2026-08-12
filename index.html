@@ -5,19 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="CareLink SG — AI-enabled community health prototype for Healthcare Beyond Hospitals." />
   <title>CareLink SG — Community Health Companion</title>
-  <link rel="icon" type="image/png" href="carelink-logo.png?v=mobile-responsive-13" />
+  <link rel="icon" type="image/png" href="carelink-logo.png?v=rachel-parents-bound-24" />
   <meta name="theme-color" content="#113c3d" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-  <link rel="stylesheet" href="styles.css?v=mobile-responsive-13" />
+  <link rel="stylesheet" href="styles.css?v=rachel-parents-visible-25" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
-  <script src="app.js?v=mobile-responsive-13" defer></script>
+  <script src="app.js?v=rachel-parents-visible-25" defer></script>
 </head>
 <body>
-  <div class="app-shell">
+  <section class="auth-screen" id="authScreen" aria-label="Authentication">
+    <div class="auth-card">
+      <div class="auth-tabs" role="tablist" aria-label="Login or register">
+        <button class="auth-tab active" id="loginTab" type="button">Login</button>
+        <button class="auth-tab" id="registerTab" type="button">Register</button>
+      </div>
+
+      <form class="auth-form active" id="loginForm" autocomplete="on">
+        <label>Phone number<input type="tel" id="loginPhone" autocomplete="tel" inputmode="tel" placeholder="+65 9123 4567" required /></label>
+        <label>Password<input type="password" id="loginPassword" autocomplete="current-password" required /></label>
+        <button class="button primary" type="submit">Login</button>
+      </form>
+
+      <form class="auth-form" id="registerForm" autocomplete="on">
+        <fieldset class="auth-role-field" aria-label="Register as">
+          <legend>Register as</legend>
+          <label class="role-option selected"><input type="radio" name="registerRole" value="patient" checked /> Patient</label>
+          <label class="role-option"><input type="radio" name="registerRole" value="caregiver" /> Caregiver</label>
+        </fieldset>
+        <label>Full name<input type="text" id="registerName" autocomplete="name" value="David Tan" required /></label>
+        <label>Phone number<input type="tel" id="registerPhone" autocomplete="tel" inputmode="tel" placeholder="+65 9123 4567" required /></label>
+        <label>Password<input type="password" id="registerPassword" autocomplete="new-password" required /></label>
+        <label>Confirm password<input type="password" id="registerConfirm" autocomplete="new-password" required /></label>
+        <button class="button primary" type="submit">Register</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="app-shell" id="appShell" hidden>
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
-          <img src="carelink-logo.png?v=mobile-responsive-13" alt="" />
+          <img src="carelink-logo.png?v=rachel-parents-bound-24" alt="" />
         </div>
         <div class="brand-copy">
           <strong class="brand-name"><span class="brand-care">CareLink</span><span class="brand-sg">SG</span></strong>
@@ -26,14 +54,17 @@
       </div>
 
       <nav class="nav" aria-label="Main navigation">
-        <button class="nav-item active" data-view="dashboard"><span>⌂</span> Dashboard</button>
-        <button class="nav-item" data-view="monitoring"><span>⌁</span> Health Monitoring</button>
-        <button class="nav-item" data-view="insights"><span>✦</span> AI Insights</button>
-        <button class="nav-item" data-view="medication"><span>◉</span> Medication</button>
-        <button class="nav-item" data-view="care"><span>♡</span> Care Network</button>
-        <button class="nav-item" data-view="community"><span>⌖</span> Community Care</button>
-        <button class="nav-item" data-view="assistant"><span>✧</span> AI Assistant</button>
-        <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+        <button class="nav-item active" data-view="dashboard" data-role-nav="patient"><span>⌂</span> Dashboard</button>
+        <button class="nav-item" data-view="checkin" data-role-nav="patient"><span>◍</span> Check-in</button>
+        <button class="nav-item" data-view="monitoring" data-role-nav="patient"><span>⌁</span> Health Monitoring</button>
+        <button class="nav-item" data-view="insights" data-role-nav="patient"><span>✦</span> AI Insights</button>
+        <button class="nav-item" data-view="medication" data-role-nav="patient"><span>◉</span> Medication</button>
+        <button class="nav-item" data-view="exercises" data-role-nav="patient"><span>▣</span> Exercises</button>
+        <button class="nav-item" data-view="care" data-role-nav="patient"><span>♡</span> Care Network</button>
+        <button class="nav-item" data-view="community" data-role-nav="patient"><span>⌖</span> Community Care</button>
+        <button class="nav-item" data-view="assistant" data-role-nav="patient"><span>✧</span> AI Assistant</button>
+        <button class="nav-item" data-view="settings" data-role-nav="patient"><span>⚙</span> Settings</button>
+        <button class="nav-item" data-view="caregiver" data-role-nav="caregiver"><span>👥</span> Caregiver Dashboard</button>
       </nav>
 
       <div class="sidebar-footer">
@@ -56,7 +87,8 @@
         <div class="top-actions">
           <div class="api-pill disconnected" id="apiPill"><span class="dot"></span><span id="apiStatusText">Gemini disconnected</span></div>
           <button class="button secondary small" id="apiTopBtn">Connect API</button>
-          <div class="avatar" title="Demo profile">AT</div>
+          <div class="profile-pill" title="Demo profile"><div class="avatar" id="profileAvatar">DT</div><span id="profileName">David Tan</span></div>
+          <button class="button danger-outline small logout-button" id="logoutBtn" type="button">Logout</button>
         </div>
       </header>
 
@@ -68,10 +100,10 @@
         <div class="hero-card">
           <div>
             <span class="status-chip green">● Daily check-in ready</span>
-            <h2>Good afternoon, Alex.</h2>
-            <p>Your home health snapshot is ready. Review trends, medication, and AI-supported insights in one place.</p>
+            <h2 id="heroGreeting">Good afternoon, David.</h2>
+            <p>When something feels different at home, CareLink SG helps you describe the concern, check urgent warning signs, and choose a safer next step.</p>
             <div class="hero-actions">
-              <button class="button primary" data-go="monitoring">Add health reading</button>
+              <button class="button primary" data-go="checkin">Start check-in</button>
               <button class="button ghost" id="wearableBtn">Connect smartwatch</button>
             </div>
           </div>
@@ -80,6 +112,32 @@
             <div><strong id="scoreLabel">Stable</strong><span>Today’s wellness score</span></div>
           </div>
         </div>
+
+        <article class="card home-essential-card" id="homeEssentialCard">
+          <div class="home-essential-copy">
+            <div class="emergency-icon home-emergency-icon">!</div>
+            <div>
+              <p class="eyebrow">ESSENTIAL SUPPORT</p>
+              <h3>Hold to call emergency contact</h3>
+              <p>Patient homepage access for urgent caregiver support in this classroom prototype.</p>
+            </div>
+          </div>
+          <div class="home-essential-contact">
+            <div class="emergency-contact-card compact-contact">
+              <span class="avatar mini-avatar" id="homeCaregiverInitials">RT</span>
+              <div>
+                <strong id="homeCaregiverName">Rachel Tan</strong>
+                <span id="homeCaregiverRelation">Daughter · Primary emergency contact</span>
+              </div>
+            </div>
+            <button class="emergency-hold-button compact-hold" id="holdEmergencyBtn" type="button" aria-describedby="emergencyHint">
+              <span class="hold-progress" id="holdProgress" aria-hidden="true"></span>
+              <span class="hold-button-content"><strong>Hold 3 seconds</strong><small>Call emergency contact</small></span>
+            </button>
+            <p class="subtle" id="emergencyHint">Press and hold for 3 seconds to activate the emergency contact call demo.</p>
+            <div class="emergency-status" id="emergencyStatus">Ready for long-press action.</div>
+          </div>
+        </article>
 
         <div class="metric-grid">
           <article class="metric-card"><div class="metric-icon">♥</div><div class="metric-label">Heart rate</div><div class="metric-value"><span id="dashHr">72</span> <small>bpm</small></div><div class="metric-foot positive">Within demo range</div></article>
@@ -105,7 +163,7 @@
         </div>
 
         <article class="card wearable-card" id="wearableCard">
-          <div><p class="eyebrow">CONNECTED HEALTH</p><h3>Bring wearable data into the journey</h3><p>Simulate a smartwatch connection to demonstrate automatic home monitoring without requiring a real device integration.</p></div>
+          <div><p class="eyebrow">CONNECTED HEALTH</p><h3>Optional wearable connection</h3><p>CareLink SG works without special equipment. A smartwatch connection is optional and simulated here to show how additional data could support the journey.</p></div>
           <div class="wearable-status"><span class="device-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" role="img" focusable="false">
                 <path d="M9 3.5h6l.8 3.4a5.9 5.9 0 0 1 0 10.2L15 20.5H9l-.8-3.4a5.9 5.9 0 0 1 0-10.2L9 3.5Z"/>
@@ -113,6 +171,137 @@
                 <path d="M10 10.4h4M10 13.2h3"/>
               </svg>
             </span><div><strong id="wearableName">No device connected</strong><span id="wearableStatus">Manual readings only</span></div><button class="button secondary small" id="wearableInlineBtn">Connect</button></div>
+        </article>
+      </section>
+
+
+      <section class="view" id="view-checkin">
+        <div class="section-intro">
+          <div>
+            <p class="eyebrow">DECISION SUPPORT</p>
+            <h2>Something Feels Different Check-in</h2>
+            <p>Use voice simulation, text, or guided options to describe a health change and receive safety-oriented next-step guidance.</p>
+          </div>
+          <button class="button secondary" id="loadCheckinDemo" type="button">Load dizziness sample</button>
+        </div>
+
+        <div class="checkin-grid">
+          <article class="card checkin-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">STARTING POINT</p>
+                <h3>I feel different at home</h3>
+              </div>
+              <span class="status-chip blue">No equipment required</span>
+            </div>
+
+            <div class="input-mode-grid" aria-label="Input mode options">
+              <button class="mode-chip active" type="button" data-checkin-mode="voice"><strong>Voice</strong><span>Simulated voice check-in</span></button>
+              <button class="mode-chip" type="button" data-checkin-mode="text"><strong>Text</strong><span>Type what changed</span></button>
+              <button class="mode-chip" type="button" data-checkin-mode="guided"><strong>Guided</strong><span>Use simple choices</span></button>
+            </div>
+            <div class="voice-status" id="voiceStatus">Voice-first mode selected. In this prototype, voice input is simulated with the text box below.</div>
+
+            <form id="checkinForm" class="checkin-form">
+              <label>What feels different today?
+                <textarea id="concernText" rows="4" placeholder="Example: I feel dizzy and my blood pressure is higher than usual." required></textarea>
+              </label>
+              <div class="form-grid checkin-controls">
+                <label>How long has this been happening?
+                  <select id="durationSelect">
+                    <option value="less than 1 hour">Less than 1 hour</option>
+                    <option value="1-4 hours">1–4 hours</option>
+                    <option value="today">Since today</option>
+                    <option value="more than 1 day">More than 1 day</option>
+                  </select>
+                </label>
+                <label>Is it getting worse?
+                  <select id="worseSelect">
+                    <option value="not worse">No / not sure</option>
+                    <option value="slightly worse">Slightly worse</option>
+                    <option value="clearly worse">Clearly worse</option>
+                  </select>
+                </label>
+                <label>How strong does it feel?
+                  <select id="severitySelect">
+                    <option value="mild">Mild</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="severe">Severe</option>
+                  </select>
+                </label>
+              </div>
+
+              <fieldset class="red-flag-box">
+                <legend>Urgent safety screening</legend>
+                <label class="check-row"><input type="checkbox" data-red-flag="Chest pain or chest pressure"> Chest pain or chest pressure</label>
+                <label class="check-row"><input type="checkbox" data-red-flag="Difficulty breathing"> Difficulty breathing</label>
+                <label class="check-row"><input type="checkbox" data-red-flag="Fainted or nearly fainted"> Fainted or nearly fainted</label>
+                <label class="check-row"><input type="checkbox" data-red-flag="Severe weakness or confusion"> Severe weakness or confusion</label>
+              </fieldset>
+
+              <div class="checkin-actions">
+                <button class="button primary" type="submit">Get next-step guidance</button>
+                <button class="button secondary" id="clearCheckinBtn" type="button">Clear check-in</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card decision-card">
+            <div class="decision-result" id="decisionResult">
+              <span class="status-chip blue">Ready</span>
+              <h3>Describe what feels different</h3>
+              <p>CareLink SG will screen for urgent warning signs first, then suggest whether to monitor, contact professional support, or seek urgent help.</p>
+              <div class="decision-pathway mini-pathway">
+                <span>Monitor</span><b>→</b><span>Contact professional</span><b>→</b><span>Urgent help</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="checkin-support-grid">
+          <article class="card summary-card">
+            <div class="card-head">
+              <div><p class="eyebrow">SHAREABLE SUMMARY</p><h3>Health summary preview</h3></div>
+              <span class="status-chip blue">Consent based</span>
+            </div>
+            <div class="summary-preview" id="healthSummary">
+              Complete a check-in to generate a clear summary for a healthcare professional or trusted contact.
+            </div>
+            <div class="consent-panel">
+              <label class="check-row"><input type="checkbox" id="shareTrusted" checked> Share with trusted contact</label>
+              <label class="check-row"><input type="checkbox" id="shareProfessional" checked> Share with healthcare professional</label>
+              <label class="check-row"><input type="checkbox" id="shareProfile"> Include optional profile context</label>
+            </div>
+            <button class="button secondary" id="shareSummaryBtn" type="button">Share summary demo</button>
+          </article>
+
+          <article class="card followup-card">
+            <p class="eyebrow">FOLLOW-UP REMINDER</p>
+            <h3>Close the monitoring loop</h3>
+            <p>When the result is not urgent, users can set a simple reminder to check again.</p>
+            <div class="reminder-buttons">
+              <button class="button secondary small" type="button" data-reminder="30 minutes">30 min</button>
+              <button class="button secondary small" type="button" data-reminder="tonight">Tonight</button>
+              <button class="button secondary small" type="button" data-reminder="tomorrow morning">Tomorrow</button>
+            </div>
+            <div class="followup-status" id="followupStatus">No reminder set in this demo session.</div>
+          </article>
+
+          <article class="card support-card">
+            <p class="eyebrow">PROFESSIONAL SUPPORT</p>
+            <h3>Find the right support level</h3>
+            <p>CareLink SG can route users to community care, telehealth, a trusted contact, or the dashboard emergency contact flow depending on the result.</p>
+            <div class="support-actions">
+              <button class="button secondary small" data-go="community" type="button">Community care</button>
+              <button class="button secondary small" data-go="care" type="button">Care network</button>
+              <button class="button danger-outline small" data-go="dashboard" type="button">Emergency contact</button>
+            </div>
+          </article>
+        </div>
+
+        <article class="card checkin-history-card">
+          <div class="card-head"><div><p class="eyebrow">CHECK-IN HISTORY</p><h3>Recent decision support sessions</h3></div><button class="text-button danger" id="clearCheckinHistoryBtn" type="button">Clear history</button></div>
+          <div class="checkin-history" id="checkinHistory"></div>
         </article>
       </section>
 
@@ -155,7 +344,7 @@
       </section>
 
       <section class="view" id="view-insights">
-        <div class="section-intro"><div><p class="eyebrow">GEMINI 2.5 FLASH</p><h2>AI Health Insights</h2><p>Turn recent home readings into a simple, safety-oriented explanation.</p></div><button class="button primary" id="analyzeBtn">Analyze recent trends</button></div>
+        <div class="section-intro"><div><p class="eyebrow">GEMINI 2.5 FLASH</p><h2>AI Health Insights</h2><p>Turn recent home readings and check-in context into a simple, safety-oriented explanation.</p></div><button class="button primary" id="analyzeBtn">Analyze recent trends</button></div>
 
         <div class="three-col insight-kpis">
           <article class="mini-card"><span>Trend engine</span><strong id="trendStatus">Checking…</strong><small>Rule-based prototype</small></article>
@@ -198,6 +387,76 @@
         </article>
       </section>
 
+      <section class="view" id="view-exercises">
+        <div class="section-intro">
+          <div>
+            <p class="eyebrow">RECOVERY GUIDANCE</p>
+            <h2>Exercise Guidance</h2>
+            <p>Visual exercise cards show users how to complete gentle recovery activities instead of relying on imagination.</p>
+          </div>
+          <span class="status-chip green">Image-guided demo</span>
+        </div>
+
+        <article class="card exercise-hero-card">
+          <div>
+            <p class="eyebrow">WHY THIS MATTERS</p>
+            <h3>See the movement before starting</h3>
+            <p>Each activity includes a simple illustration, short steps, duration, and a safety reminder so users can follow the movement more confidently at home.</p>
+          </div>
+          <button class="button primary" data-exercise-open="shoulder">View shoulder demo</button>
+        </article>
+
+        <div class="exercise-grid">
+          <article class="card exercise-card">
+            <div class="exercise-media"><img src="images/shoulder-release.svg" alt="Illustration showing a shoulder and neck release exercise" /></div>
+            <div class="exercise-copy">
+              <p class="eyebrow">1 MIN · GENTLE</p>
+              <h3>Shoulder & Neck Release</h3>
+              <p>Roll the shoulders slowly to reduce tension while breathing naturally.</p>
+              <ol class="exercise-steps">
+                <li>Sit or stand comfortably.</li>
+                <li>Lift both shoulders gently.</li>
+                <li>Roll backwards and relax.</li>
+              </ol>
+              <div class="exercise-safety">Stop if you feel pain, dizziness, or unusual discomfort.</div>
+              <button class="button secondary exercise-demo" type="button" data-exercise-open="shoulder">How to do this</button>
+            </div>
+          </article>
+
+          <article class="card exercise-card">
+            <div class="exercise-media"><img src="images/breathing-reset.svg" alt="Illustration showing a calm breathing reset exercise" /></div>
+            <div class="exercise-copy">
+              <p class="eyebrow">2 MIN · CALM</p>
+              <h3>Breathing Reset</h3>
+              <p>Use slow breathing to settle the body before checking how you feel again.</p>
+              <ol class="exercise-steps">
+                <li>Place one hand on your chest.</li>
+                <li>Breathe in slowly through your nose.</li>
+                <li>Breathe out gently and repeat.</li>
+              </ol>
+              <div class="exercise-safety">Keep the pace comfortable. Stop if breathing feels difficult.</div>
+              <button class="button secondary exercise-demo" type="button" data-exercise-open="breathing">How to do this</button>
+            </div>
+          </article>
+
+          <article class="card exercise-card">
+            <div class="exercise-media"><img src="images/gentle-walk.svg" alt="Illustration showing a gentle walking exercise" /></div>
+            <div class="exercise-copy">
+              <p class="eyebrow">5 MIN · OPTIONAL</p>
+              <h3>Gentle Walk</h3>
+              <p>Move at an easy pace when your recovery plan says light activity is appropriate.</p>
+              <ol class="exercise-steps">
+                <li>Choose a safe, flat area.</li>
+                <li>Walk slowly and keep breathing.</li>
+                <li>Pause if you feel unwell.</li>
+              </ol>
+              <div class="exercise-safety">Do not continue if you feel dizzy, painful, or unusually weak.</div>
+              <button class="button secondary exercise-demo" type="button" data-exercise-open="walk">How to do this</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section class="view" id="view-care">
         <div class="section-intro"><div><p class="eyebrow">CONNECTED CARE</p><h2>Care Network</h2><p>Give users control over what health information is shared with trusted supporters.</p></div><button class="button primary" id="addCaregiverBtn">+ Add caregiver</button></div>
 
@@ -218,6 +477,55 @@
         </article>
       </section>
 
+      <section class="view" id="view-caregiver">
+        <div class="section-intro">
+          <div>
+            <p class="eyebrow">CAREGIVER END</p>
+            <h2>Caregiver Dashboard</h2>
+            <p>Rachel Tan can see only the colour status of patients who are currently bound to her caregiver account.</p>
+          </div>
+          <span class="status-chip blue">Separate caregiver account</span>
+        </div>
+
+        <article class="card caregiver-terminal-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">BOUND PATIENTS</p>
+              <h3>Patient status overview</h3>
+            </div>
+            <span class="subtle">Status only · no detailed readings shown</span>
+          </div>
+          <div class="patient-status-grid" id="caregiverPatientList"></div>
+        </article>
+
+        <div class="two-col caregiver-binding-grid">
+          <article class="card status-legend-card">
+            <p class="eyebrow">STATUS LEGEND</p>
+            <div class="status-legend-row">
+              <span class="legend-dot healthy"></span><strong>Healthy</strong><small>Green means the patient is currently stable in this prototype.</small>
+            </div>
+            <div class="status-legend-row">
+              <span class="legend-dot danger"></span><strong>Danger</strong><small>Yellow means the patient may need caregiver attention.</small>
+            </div>
+            <div class="status-legend-row">
+              <span class="legend-dot urgent"></span><strong>Urgent</strong><small>Red means the patient should be checked immediately.</small>
+            </div>
+          </article>
+
+          <article class="card caregiver-bind-card">
+            <div class="card-head compact-head">
+              <div>
+                <p class="eyebrow">BINDING CONTROL</p>
+                <h3>Manage patient links</h3>
+              </div>
+              <button class="button secondary small" id="addPatientBtn" type="button">+ Add patient</button>
+            </div>
+            <p class="subtle">Use this classroom demo control to add, bind, or unbind patients from Rachel Tan's caregiver account.</p>
+            <div class="bind-control-list" id="caregiverBindList"></div>
+          </article>
+        </div>
+      </section>
+
       <section class="view" id="view-community">
         <div class="section-intro"><div><p class="eyebrow">COMMUNITY SUPPORT</p><h2>Community Care</h2><p>Prototype pathways from home monitoring to appropriate community-based support.</p></div></div>
 
@@ -228,12 +536,13 @@
         </div>
 
         <article class="card pathway-card">
-          <div><p class="eyebrow">CARE PATHWAY</p><h3>From home data to community support</h3></div>
-          <div class="pathway"><div><span>1</span><strong>Monitor at home</strong><small>Health readings</small></div><b>→</b><div><span>2</span><strong>Identify a trend</strong><small>Local rules + AI</small></div><b>→</b><div><span>3</span><strong>Share intentionally</strong><small>Care network</small></div><b>→</b><div><span>4</span><strong>Seek support</strong><small>Community care</small></div></div>
+          <div><p class="eyebrow">CARE PATHWAY</p><h3>From check-in to community support</h3></div>
+          <div class="pathway"><div><span>1</span><strong>Describe concern</strong><small>Voice/text/guided</small></div><b>→</b><div><span>2</span><strong>Screen safely</strong><small>Red flags + context</small></div><b>→</b><div><span>3</span><strong>Choose next step</strong><small>Monitor or seek support</small></div><b>→</b><div><span>4</span><strong>Share summary</strong><small>With consent</small></div></div>
         </article>
 
         <div class="urgent-note"><strong>Urgent situations:</strong> This prototype is not an emergency service. In a real product, emergency guidance should be designed with qualified clinical and local-service input.</div>
       </section>
+
 
       <section class="view" id="view-assistant">
         <div class="assistant-layout">
@@ -246,7 +555,7 @@
               <button>How active was I this week?</button>
             </div>
             <div class="chat-messages" id="chatMessages">
-              <div class="message ai"><span class="message-avatar">✦</span><div><strong>CareLink SG AI</strong><p>Hi Alex. I can explain the demo health data in this prototype. Connect a Gemini API key to start.</p></div></div>
+              <div class="message ai"><span class="message-avatar">✦</span><div><strong>CareLink SG AI</strong><p>Hi David. I can explain the demo health data in this prototype. Connect a Gemini API key to start.</p></div></div>
             </div>
             <form class="chat-input" id="chatForm"><textarea id="chatInput" rows="1" placeholder="Ask about the health data in this demo…"></textarea><button class="button primary" type="submit">Send</button></form>
             <div class="ai-disclaimer">For educational prototype use only. Do not rely on the assistant for diagnosis, emergencies, or treatment decisions.</div>
@@ -300,12 +609,12 @@
             <div class="info-card-icon">i</div>
             <p class="eyebrow">ABOUT</p>
             <h3>About CareLink SG</h3>
-            <p>CareLink SG is an AI-powered community health companion prototype for the Healthcare Beyond Hospitals design challenge. It demonstrates how home health readings, medication routines, caregiver sharing, and community support can be connected in one simple digital journey.</p>
+            <p>CareLink SG is an AI-powered community health companion prototype for the Healthcare Beyond Hospitals design challenge. It demonstrates how a user can describe when something feels different at home, receive urgent safety screening, get explainable next-step guidance, and connect with trusted or professional support when needed.</p>
             <div class="info-list compact">
-              <span>Remote monitoring</span>
-              <span>Medication adherence</span>
-              <span>Caregiver coordination</span>
-              <span>Gemini AI explanation</span>
+              <span>Voice/text/guided check-in</span>
+              <span>Urgent safety screening</span>
+              <span>Explainable next-step guidance</span>
+              <span>Consent-based summary sharing</span>
             </div>
           </article>
 
@@ -313,10 +622,10 @@
             <div class="info-card-icon shield">✓</div>
             <p class="eyebrow">PRIVACY PROTECTION</p>
             <h3>Privacy protection statement</h3>
-            <p>This classroom prototype is designed to minimise data exposure. Demo health readings, medications, caregiver names, and display preferences stay in this browser unless an AI feature is used.</p>
+            <p>This classroom prototype is designed to minimise data exposure. Demo check-ins, health readings, medications, caregiver names, and display preferences stay in this browser unless an AI feature or share-summary demo is used.</p>
             <ul class="privacy-list">
               <li>Gemini API key is stored only in <code>sessionStorage</code> and can be removed with <strong>Clear / Disconnect</strong>.</li>
-              <li>Prototype data is stored locally in the browser through <code>localStorage</code>.</li>
+              <li>Prototype data, including check-in history, is stored locally in the browser through <code>localStorage</code>.</li>
               <li>When AI analysis or chat is used, only the displayed demo snapshot and user message are sent to Gemini.</li>
               <li>This is not a production medical system and does not replace professional healthcare advice.</li>
             </ul>
@@ -328,7 +637,7 @@
           <div class="qa-list">
             <details open>
               <summary>What problem does CareLink SG solve?</summary>
-              <p>It helps show how basic health monitoring can move from hospital-only care into home and community settings. Users can record readings, see trends, receive AI-supported explanations, and involve caregivers when needed.</p>
+              <p>It helps show how health decision support can move from hospital-only care into the home and community. Users can describe a concern, answer adaptive questions, receive safety-oriented next-step guidance, and share a summary with consent.</p>
             </details>
             <details>
               <summary>Is this a real medical diagnosis tool?</summary>
@@ -344,7 +653,7 @@
             </details>
             <details>
               <summary>How can this be extended in the future?</summary>
-              <p>A future version could connect real wearable data, add a secure backend, integrate appointment booking, support multilingual caregivers, and provide stronger consent controls.</p>
+              <p>A future version could add real voice recognition, multilingual voice output, secure backend storage, verified clinical decision rules, appointment booking, and approved provider integrations.</p>
             </details>
           </div>
         </article>

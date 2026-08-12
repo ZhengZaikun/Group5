@@ -1,0 +1,27 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 420' role='img' aria-labelledby='t d'>
+<title id='t'>Gentle walking illustration</title><desc id='d'>A simple figure walking slowly with a safe pace indicator.</desc>
+
+<defs>
+  <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>
+    <stop offset='0' stop-color='#e8f7f4'/>
+    <stop offset='1' stop-color='#f7fbf8'/>
+  </linearGradient>
+  <filter id='shadow' x='-20%' y='-20%' width='140%' height='140%'>
+    <feDropShadow dx='0' dy='6' stdDeviation='8' flood-color='#2a6b67' flood-opacity='.12'/>
+  </filter>
+</defs>
+
+<rect width='640' height='420' rx='42' fill='url(#bg)'/>
+<path d='M80 330c108-60 207-60 310-22 62 23 112 24 170-16' fill='none' stroke='#bde5df' stroke-width='18' stroke-linecap='round'/>
+<g filter='url(#shadow)'>
+  <circle cx='310' cy='96' r='42' fill='#ffffff' stroke='#28766f' stroke-width='7'/>
+  <path d='M305 145l-47 82 55 33 52-74z' fill='#ffffff' stroke='#28766f' stroke-width='8' stroke-linejoin='round'/>
+  <path d='M258 227l-48 64M312 260l29 74' fill='none' stroke='#28766f' stroke-width='12' stroke-linecap='round'/>
+  <path d='M281 186l-58-12M353 190l56 36' fill='none' stroke='#28766f' stroke-width='12' stroke-linecap='round'/>
+</g>
+<path d='M413 124c46 11 80 34 99 70' fill='none' stroke='#0f766e' stroke-width='9' stroke-linecap='round'/>
+<path d='M508 197l-30 2 15-27' fill='none' stroke='#0f766e' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/>
+<rect x='86' y='66' width='168' height='58' rx='29' fill='#ffffff' stroke='#cfe7e4' stroke-width='4'/>
+<text x='170' y='101' text-anchor='middle' font-family='Inter,Arial,sans-serif' font-size='20' fill='#16484a' font-weight='800'>Gentle pace</text>
+<text x='320' y='372' text-anchor='middle' font-family='Inter,Arial,sans-serif' font-size='24' fill='#16484a' font-weight='800'>Walk slowly and stop if unwell</text>
+</svg>
